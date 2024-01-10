@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: [true, 'Please provide email.'],
         validate: {
             validator: validator.isEmail,
@@ -34,5 +35,10 @@ UserSchema.pre('save', async function () {
     const salt = await bcrypt.genSalt()
     this.password = await bcrypt.hash(this.password, salt)
 })
+
+UserSchema.methods.validatePassword = async function (inputPassword) {
+    const isValid = await bcrypt.compare(inputPassword, this.password)
+    return isValid
+}
 
 module.exports = mongoose.model('User', UserSchema)
