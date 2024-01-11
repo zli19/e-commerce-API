@@ -15,7 +15,8 @@ const attachCookiesToRes = (payload, res) => {
         httpOnly: true,
         expires: new Date(Date.now() + oneDay),
         secure: process.env.NODE_ENV === 'production',
-        signed:true
+        signed:true,
+        // sameSite: 'Strict'
     })
 }
 
