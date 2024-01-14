@@ -20,8 +20,13 @@ const attachCookiesToRes = (payload, res) => {
     })
 }
 
+const attachCookiesForUserToRes = (user, res)=>{
+    const tokenUser = { name: user.name, userId: user._id, role: user.role }
+    attachCookiesToRes(tokenUser, res)
+    return tokenUser
+}
+
 module.exports = {
-    genJWT,
-    isTokenValid,
-    attachCookiesToRes
+    attachCookiesForUserToRes,
+    isTokenValid
 }
