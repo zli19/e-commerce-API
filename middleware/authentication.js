@@ -16,7 +16,7 @@ const authenticateUser = async (req, res, next) => {
     }
 }
 
-const authorizePermisions = (...roles) => {
+const authorizePermissions = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role)) {
             throw new CustomError.UnauthorizedError('Unauthorized to access')
@@ -27,5 +27,5 @@ const authorizePermisions = (...roles) => {
 
 module.exports = {
     authenticateUser,
-    authorizePermisions
+    authorizePermissions
 }

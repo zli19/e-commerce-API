@@ -2,6 +2,7 @@ const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
 const {attachCookiesForUserToRes} = require('../utils/jwt')
+const checkPermissions = require('../utils/checkPermissions')
 
 const getAllUsers = async (req, res) => {
 
@@ -10,6 +11,7 @@ const getAllUsers = async (req, res) => {
 }
 
 const getSingleUser = async (req, res) => {
+    checkPermissions(req.user, req.params.id)
     const user = await User.findOne({ _id: req.params.id }).select('-password')
     if (!user) {
         throw new CustomError.NotFoundError('No such user')
