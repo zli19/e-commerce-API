@@ -5,9 +5,7 @@ const {attachCookiesForUserToRes} = require('../utils/jwt')
 
 const register = async (req, res) => {
     const { name, email, password } = req.body
-    if (!name || !email || !password) {
-        throw new CustomError.BadRequestError('Please provide name, email and password')
-    }
+    
     const isEmailDup = await User.findOne({ email })
     // console.log(isEmailDup)
     if (isEmailDup) {

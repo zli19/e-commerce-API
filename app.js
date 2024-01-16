@@ -9,6 +9,7 @@ const app = express()
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const fileUpload = require('express-fileupload')
 
 // db
 const connectDB = require('./db/connect')
@@ -16,6 +17,7 @@ const connectDB = require('./db/connect')
 // routers
 const authRouter = require('./routes/authRouter')
 const userRouter = require('./routes/userRouter')
+const productRouter = require('./routes/productRouter')
 
 // middlewares
 const notFound = require('./middleware/not-found')
@@ -28,6 +30,8 @@ app.use(express.json())
 app.use(cookieParser(process.env.JWT_PRIVATE_KEY))
 app.use(cors())
 
+app.use(express.static('./public'))
+app.use(fileUpload())
 
 app.get('/', (req, res) => {
     res.send('e-commerce api')
@@ -39,6 +43,7 @@ app.get('/api/v1', (req, res) => {
 })
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/products', productRouter)
 
 
 app.use(notFound)
