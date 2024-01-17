@@ -17,7 +17,7 @@ const getAllProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
     const { id } = req.params
-    const product = await Product.findById(id)
+    const product = await Product.findById(id).populate('reviews')
     if (!product) {
         throw new CustomError.NotFoundError(`No such product with id ${id}`)
     }
@@ -37,12 +37,13 @@ const updateProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
-    const { id } = req.params
-    const product = await Product.findByIdAndDelete(id)
+    const { id: productId } = req.params
+    const product = await Product.findById(productId)
 
     if (!product) {
         throw new CustomError.NotFoundError(`No such product with id ${id}`)
     }
+    await product.deleteOne()
     res.status(StatusCodes.OK).json({ msg: 'Success! Product removed' })
 }
 

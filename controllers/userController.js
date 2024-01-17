@@ -1,7 +1,7 @@
 const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
-const {attachCookiesForUserToRes} = require('../utils/jwt')
+const { attachCookiesForUserToRes } = require('../utils/jwt')
 const checkPermissions = require('../utils/checkPermissions')
 
 const getAllUsers = async (req, res) => {
@@ -28,12 +28,11 @@ const updateUser = async (req, res) => {
     if (!name || !email) {
         throw new CustomError.BadRequestError('Please provide name and email')
     }
-    const user = await User.findByIdAndUpdate(
-        req.user.userId,
-        { name, email },
-        { new: true, runValidators: true }
-    )
-
+    const user = await User.findById(req.user.userId)
+    user.name = name
+    user.email = email
+    user.save()
+    
     const tokenUser = attachCookiesForUserToRes(user, res)
 
     res.status(StatusCodes.OK).json({ user: tokenUser })

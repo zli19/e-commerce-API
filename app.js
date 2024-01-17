@@ -18,6 +18,7 @@ const connectDB = require('./db/connect')
 const authRouter = require('./routes/authRouter')
 const userRouter = require('./routes/userRouter')
 const productRouter = require('./routes/productRouter')
+const reviewRouter = require('./routes/reviewRouter')
 
 // middlewares
 const notFound = require('./middleware/not-found')
@@ -44,7 +45,7 @@ app.get('/api/v1', (req, res) => {
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/products', productRouter)
-
+app.use('/api/v1/reviews', reviewRouter)
 
 app.use(notFound)
 app.use(errorHandler)

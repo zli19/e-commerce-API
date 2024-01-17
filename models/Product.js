@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Review = require('./Review')
 
 const ProductSchema = new mongoose.Schema({
     name: {
@@ -61,6 +62,23 @@ const ProductSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     }
-}, { timestamps: true })
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+})
+
+ProductSchema.virtual('reviews', {
+    ref: 'Review',
+    localField: '_id',
+    foreignField: 'product',
+    justOne: false
+})
+
+ProductSchema.pre('deleteOne',
+{ document: true, query: false }, // Mongoose registers deleteOne middleware on Query.prototype.deleteOne by default.
+async function(){
+    await mongoose.model('Review').deleteMany({product: this._id})
+})
 
 module.exports = mongoose.model('Product', ProductSchema)
