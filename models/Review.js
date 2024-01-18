@@ -19,7 +19,7 @@ const ReviewSchema = new mongoose.Schema({
     },
     user: {
         type: mongoose.Types.ObjectId,
-        ref: 'User',  
+        ref: 'User',
         required: true
     },
     product: {
@@ -27,7 +27,41 @@ const ReviewSchema = new mongoose.Schema({
         ref: 'Product',
         required: true
     }
-},{timestamps: true})
-ReviewSchema.index({'user':1, 'product':1}, {unique: true})
+}, { timestamps: true })
+
+ReviewSchema.index({ 'user': 1, 'product': 1 }, { unique: true })
+
+ReviewSchema.statics.getSingleProductReviewStat = async function (productId) {
+    const results = await this.aggregate([
+        { $match: { product: productId } },
+        {
+            $group: {
+                _id: null,
+                averageRating: {
+                    $avg: '$rating'
+                },
+                numOfReviews: {
+                    $sum: 1
+                }
+            }
+        }
+    ])
+    await mongoose.model('Product')
+        .findByIdAndUpdate(
+            productId,
+            {
+                averageRating: Math.ceil(results[0]?.averageRating || 0),
+                numOfReviews: results[0]?.numOfReviews || 0
+            }
+        )
+}
+
+ReviewSchema.post('save', async function () {
+    await this.constructor.getSingleProductReviewStat(this.product)
+})
+
+ReviewSchema.post('deleteOne', { document: true, query: false }, async function () {
+    await this.constructor.getSingleProductReviewStat(this.product)
+})
 
 module.exports = mongoose.model('Review', ReviewSchema)
